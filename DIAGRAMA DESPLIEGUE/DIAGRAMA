@@ -1,0 +1,118 @@
+@startuml
+package "CLIENTE APPS"{
+actor MOBILE
+actor WEB
+actor SPA
+}
+
+package "API / BFF" {
+  [Mobile.Shopping]
+  [Mobile.Marketing]
+  [Web.Shopping]
+  [Web.Marketing]
+
+}
+package "WEPAPP MVC"{
+  [ASP.NET MVC]
+}
+
+package "MICROSERVICIOS"{
+
+node "Identity"{
+  [Usuarios]
+ database "SQL SERVER I" {
+    [usuarios]
+ }
+}
+node "Catalog"{
+  [Item]
+ database "SQL SERVER C" {
+    [item]
+ }
+}
+node "Ordering"{
+  [Ordering API]
+  [Ordering Background]
+ database "SQL SERVER DB O" {
+    [ordering]
+ }
+}
+node "Basket"{
+  [BasketItem]
+ database "Redis cache" {
+    [basket]
+ }
+}
+
+node "Marketing"{
+  [MarketingData]
+ database "SQL SERVER M" {
+    [Mongo]
+ }
+database "MongoDB" {
+    [DATA]
+ }
+}
+
+node "Locations"{
+  [LocationsData]
+ database "MongoDBL" {
+    [locations]
+ }
+}
+}
+
+
+cloud {
+  [Xamarin Forms, C#, iOS, Android]
+}
+cloud {
+  [HTML]
+}
+cloud {
+  [TypeScript, Angular]
+}
+
+queue BUS {
+[RABBITMQ, AZURE SERVICE BUS]
+}
+
+MOBILE --> [Mobile.Shopping]
+[Mobile.Shopping]<-->[Mobile.Marketing]
+WEB -->[ASP.NET MVC]
+SPA--> [Web.Marketing]
+[Web.Shopping]<--> [Web.Marketing]
+[ASP.NET MVC]--> [Web.Shopping]
+
+[Xamarin Forms, C#, iOS, Android]-->MOBILE
+[HTML]-->WEB
+[TypeScript, Angular]-->SPA
+
+[Usuarios]-->[usuarios]
+[Item]-->[item]
+[Ordering API]-->[ordering]
+[Ordering Background]-->[ordering]
+[BasketItem]-->[basket]
+[MarketingData]-->[Mongo]
+[MarketingData]-->[DATA]
+[LocationsData]-->[locations]
+
+[Mobile.Shopping]-->[Item]
+[Mobile.Shopping]-->[Ordering API]
+[Mobile.Shopping]-->[BasketItem]
+[Web.Shopping]-->[Item]
+[Web.Shopping]-->[Ordering API]
+[Web.Shopping]-->[BasketItem]
+
+[Mobile.Marketing]-->[MarketingData]
+[Mobile.Marketing]-->[LocationsData]
+[Web.Marketing]-->[MarketingData]
+[Web.Marketing]-->[LocationsData]
+
+Identity-->BUS
+Catalog-->BUS
+Ordering-->BUS
+Basket-->BUS
+Marketing-->BUS
+Locations-->BUS
+@enduml
